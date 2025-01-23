@@ -8,13 +8,7 @@ const connectDB = require('./db'); // Ensure you have a db.js file for MongoDB c
 const authRoutes = require('./routes/auth'); // Your authentication routes
 const foodListingRoutes = require('./routes/foodListing'); // Your food listing routes
 const reservationRoutes = require('./routes/reservation');
-const statsRoutes = require('./routes/stats'); 
-
-
-// console.log('Cloudflare R2 Bucket Name:', process.env.CLOUDFLARE_R2_BUCKET_NAME);
-// console.log('Cloudflare R2 Endpoint:', process.env.CLOUDFLARE_R2_ENDPOINT);
-// console.log('Cloudflare R2 Access Key:', process.env.CLOUDFLARE_R2_ACCESS_KEY);
-// console.log('Cloudflare R2 Secret Key:', process.env.CLOUDFLARE_R2_SECRET_KEY);
+const statsRoutes = require('./routes/stats');
 
 const app = express();
 
@@ -30,8 +24,30 @@ const s3 = new AWS.S3({
   // s3ForcePathStyle: true, // This is important for R2 compatibility
 });
 
+// CORS Configuration
+const allowedOrigins = [
+  'https://shareplate-frontend.vercel.app', // Your deployed frontend URL
+  'http://localhost:3000', // For local development
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      // Check if the origin is in the allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // Allow cookies and credentials
+  })
+);
+
 // Middleware
-app.use(cors({ origin: 'http://localhost:3000', credentials: true })); // Allow frontend to communicate
 app.use(bodyParser.json({ limit: '50mb' })); // Increase payload limit for image uploads
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser()); // Parse cookies
@@ -39,10 +55,8 @@ app.use(cookieParser()); // Parse cookies
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/food-listings', foodListingRoutes);
-app.use('/api/reservations', reservationRoutes); // Ensure this line is present
-app.use('/api/stats', statsRoutes); // Add this line
-
-
+app.use('/api/reservations', reservationRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Proxy endpoint for uploading images to Cloudflare R2
 app.post('/api/upload-image', async (req, res) => {
