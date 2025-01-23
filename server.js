@@ -44,8 +44,13 @@ app.use(
       }
     },
     credentials: true, // Allow cookies and credentials
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
   })
 );
+
+// Handle OPTIONS requests (preflight)
+app.options('*', cors()); // Enable preflight requests for all routes
 
 // Middleware
 app.use(bodyParser.json({ limit: '50mb' })); // Increase payload limit for image uploads
