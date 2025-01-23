@@ -30,19 +30,11 @@ const allowedOrigins = [
   'http://localhost:3000', // For local development
 ];
 
+// 
+
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      // Check if the origin is in the allowed list
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: 'https://shareplate-frontend.vercel.app', // Allow only your frontend URL
     credentials: true, // Allow cookies and credentials
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
@@ -51,6 +43,15 @@ app.use(
 
 // Handle OPTIONS requests (preflight)
 app.options('*', cors()); // Enable preflight requests for all routes
+
+// Handle OPTIONS requests (preflight)
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', 'https://shareplate-frontend.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(204); // No content for preflight requests
+});
 
 // Middleware
 app.use(bodyParser.json({ limit: '50mb' })); // Increase payload limit for image uploads
