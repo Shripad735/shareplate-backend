@@ -149,7 +149,7 @@ router.post('/register', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ id: newUser._id, userType: newUser.userType }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '24h',
     });
 
     // Set the token in a cookie
@@ -181,7 +181,7 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ id: user._id, userType: user.userType }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '24h',
     });
 
     // Set the token in a cookie
