@@ -29,22 +29,23 @@ const allowedOrigins = [
   'http://localhost:3000', // For local development
 ];
 
-// Middleware to handle CORS
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-  next();
-});
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 
 // Handle OPTIONS requests (preflight)
-app.options('*', (req, res) => {
-  res.sendStatus(204); // No content for preflight requests
-});
+app.options('*', cors(corsOptions));
 
 // Middleware
 app.use(bodyParser.json({ limit: '50mb' }));
