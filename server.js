@@ -24,27 +24,15 @@ const s3 = new AWS.S3({
 });
 
 // CORS Configuration
-const allowedOrigins = [
-  'https://shareplate-frontend.vercel.app', // Your deployed frontend URL
-  'http://localhost:3000', // For local development
-];
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: 'https://shareplate-frontend.vercel.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
-
-// Handle OPTIONS requests (preflight)
 app.options('*', cors(corsOptions));
 
 // Middleware
