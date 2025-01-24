@@ -154,7 +154,6 @@ Before you begin, ensure you have the following installed:
    - Manage all users
    - View platform statistics
    - Monitor all listings and reservations
-   - Generate reports
 
 ---
 
